@@ -1,0 +1,61 @@
+subroutine list:
+
+________Math_Functions___________
+1. add
+# PARAM  :
+# RETURN :
+
+2. sub
+# PARAM  :
+# RETURN :
+
+
+3. mult
+# PARAM  :
+# RETURN :
+
+4. div
+# PARAM  :
+# RETURN :
+
+5. mod
+# PARAM  :
+# RETURN :
+
+
+________Byte_Operations__________
+1. isoprt
+# Determines whether the given
+# byte is an operator or operand
+# PARAM	 : $a0 = byte
+# RETURN : $v0 // 0=operand, 1=operator
+
+2. 
+
+
+________Stack_Operations_________
+1. oprdpush
+# Pushes a half word to 
+# operand array stack
+# PARAM	 : $a0
+# RETURN : $v0 // 0=fail, 1=success
+
+2. oprdpop
+# Returns the top of 
+# operand array stack
+# PARAM	 : null
+# RETURN : $v0 = top of stack
+#		   $v1 // 0=fail 1=success
+
+3. oprtpush
+# Pushes a half word to 
+# operator array stack
+# PARAM	 : $a0
+# RETURN : $v0 // 0=fail, 1=success
+
+4. oprtpop
+# Returns the top of 
+# operator array stack
+# PARAM	 : null
+# RETURN : $v0 = top of stack
+#		   $v1 // 0=fail 1=success

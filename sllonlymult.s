@@ -1,0 +1,13 @@
+# USING SLL INSTRUCTION AND ONE OTHER
+# INSTRUCTION, MULTIPLY
+# TWO SIGNED INTEGERS STORED IN REGISTER
+# $a0 BY 31
+# RESULT STORED IN $a0
+.globl main
+
+.data
+
+.text
+main:
+	sll $t0, $a0, 5
+	sub $a0, $t0, $a0
