@@ -27,10 +27,14 @@ ________Byte_Operations__________
 1. isoprt
 # Determines whether the given
 # byte is an operator or operand
-# PARAM	 : $a0 = byte
+# PARAM	 : $a0
 # RETURN : $v0 // 0=operand, 1=operator
 
-2. 
+2. prec
+# Returns the value of the expression
+# prec($a0) < prec(oprt.top)
+# PARAM  : $a0
+# RETURN : $v0 // 0=false, 1=true
 
 
 ________Stack_Operations_________
