@@ -1,46 +1,123 @@
-# DATA SECTION EXAMPLE
-# .data
-# a: .half 32
-# b: .half 923
-# c: .half 0x6214
-# d: .half 4
-# e: .half 17
-# exp: .asciiz "c:=25+b/a+b*3"
+# ###############  DATA ADDRESSES  ###############
+#               a = 0x1000 0000  
+#               b = 0x1000 0002  
+#               c = 0x1000 0004  
+#               d = 0x1000 0006  
+#               e = 0x1000 0008  
+#   operand stack = 0x1000 0010
+#  operator stack = 0x1000 0050
+#      expression = 0x1000 0090
 
-# STACK EXAMPLE
-# c:=a/3-e*2
-# stack should look like
-#  ____
-# | + | - TOP
-# | / |
-# | a |
-# | 3 |
-# | * |
-# | e |
-# | 2 | - BOTTOM
-# -----
-# pop *e2 first
-# then pop /a3 next
-# then +
+# ###############  SAVED REGISTERS  ###############
+# $s0 = operand stack addr     
+# $s1 = operand stack pointer  
+# $s2 = operator stack addr    
+# $s3 = operator stack pointer 
+# $s4 = expression addr        
+# $s5 = current byte ptr       
+# $s6 = current byte               
+# $s7 = assop/num bit              
+# $t5 = assignment addr 
 
-#     NULL = 0x00 
-#   + = 43 = 0x2b
-#   - = 45 = 0x2d
-#   * = 42 = 0x2a
-#   / = 47 = 0x2f
-#   % = 37 = 0x25
-#   :=  58 = 0x3a 61 0x3d
-#    space = 32 0x20
-#        0 = 48
-#        1 = 49
-#        2 = 50
-#        3 = 51   
-#        4 = 52
-#        5 = 53
-#        6 = 54
-#        7 = 55   
-#        8 = 56
-#        9 = 57
+# ###############  SUBROUTINE LIST  ###############
+#  ____________________________________________
+# /_______________math_functions______________/|
+# |___________________________________________|/
+
+# 1. ADD
+# # $a1 + $a2 = $v0
+# # PARAM  : $a1, $a2
+# # RETURN : $v0
+
+# 2. SUB
+# # $a1 - $a2 = $v0
+# # PARAM  : $a1, $a2
+# # RETURN : $v0
+
+# 3. MULT
+# # Returns the product of two numbers
+# # $a1 * $a2 = $v0
+# # PARAM  : $a1, $a2
+# # RETURN : $v0
+
+# 4. DIVIDE
+# # Returns the quotient and remainder of two numbers
+# # $a1 / $a2 = $v0, remainder = $v1
+# # PARAM  : $a1, $a2
+# # RETURN : $v0,$v1
+
+# 5. CALC
+# # PARAM  : $a0, $a1, $a2
+# # RETURN : $v0, $v1(DIVIDE and MOD), $a3(mod) // 0=notmod, 1=mod
+#  _____________________________________________
+# /_______________byte_operations______________/|
+# |____________________________________________|/
+
+# 1. ISVALID
+# # Determines whether current bytes
+# # is a valid input
+# # [0-9,+,-,*,/,%,a-e]
+# # PARAM  : $a0
+# # RETURN : $v0 // 0=invalid, 1=valid
+
+# 2. ISOPRT
+# # Determines whether the given
+# # byte is an operator or operand
+# # PARAM  : $a0
+# # RETURN : $v0 // 0=operand, 1=operator
+
+# 3. ISVAR
+# # Determines whether the given
+# # byte is a variable [a-e]
+# # If so, sets $v1 to value in memory of var
+# # PARAM  : $a0
+# # RETURN : $v0 // 0=false, 1=true
+#            $v1
+
+# 4. ISVARADDR        
+# # Determines whether the given
+# # byte is a variable [a-e]
+# # If so, sets $v1 to addr of var
+# # PARAM  : $a0
+# # RETURN : $v0 // 0=false, 1=true
+#            $v1 = addr
+
+# 5. PREC
+# # Compares precedence and
+# # returns the value of the expression
+# # prec($a0) <= prec(oprt.top)
+# # PARAM  : $a0
+# # RETURN : $v0 // 0=false, 1=true
+#  ______________________________________________
+# /_______________stack_operations______________/|
+# |_____________________________________________|/
+
+# 1. OPRDPUSH
+# # Pushes a half word to 
+# # operand array stack
+# # PARAM  : $a0
+# # RETURN : $v0 // 0=fail, 1=success
+
+# 2. OPRDPOP
+# # Returns the top of 
+# # operand array stack
+# # PARAM  : null
+# # RETURN : $v0 = top of stack
+# #          $v1 // 0=fail 1=success
+
+# 3. OPRTPUSH
+# # Pushes a half word to 
+# # operator array stack
+# # PARAM  : $a0
+# # RETURN : $v0 // 0=fail, 1=success
+
+# 4. OPRTPOP
+# # Returns the top of 
+# # operator array stack
+# # PARAM  : null
+# # RETURN : $v0 = top of stack
+# #          $v1 // 0=fail 1=success
+
 
 .globl main
 .globl mainass
@@ -96,22 +173,22 @@
 
 .data
 #####VARIABLES#####
-a: .half 23
-b: .half 4
-c: .half 971
-d: .half 0xFFFC
-e: .half 10
+a: .half 541
+b: .half 8290
+c: .half 0xF0C8
+d: .half 12348
+e: .half 19
 ###################
 empty1: .space 6
 err_msg : .asciiz "SYNTAX ERROR"
 empty: .space 2
 
-oprd: .space 128       # 0x1000 0020 max_size = 32
-oprt: .space 128       # 0x1000 0060 max_size = 32
+oprd: .space 128       # 0x1000 0020 oprd stack max_size = 32
+oprt: .space 128       # 0x1000 0060 oprt stack max_size = 32
 empty2: .space 1
 
 #####EXPRESSION#####
-exp: .asciiz "e:=45+b-c/a" # 0x1000 0120
+exp: .asciiz "a:=1428 / e - a  * 9172 + 598*b   + d % 2023 +5000 " # 0x1000 0120
 ####################
 
 
@@ -562,10 +639,6 @@ mainloop:
     beq $s6, $0, end        #check if cb == NULL
     or $0, $0, $0
 
-    
-
-
-
     add $a0, $0, $s6        #check if cb is a var
     jal ISVAR
     or $0, $0, $0
@@ -612,13 +685,13 @@ main1:
 main11:
     add $a0, $0, $s6        #push cb to oprd
     jal OPRDPUSH
-    addi $s5, $s5, 1         #increment cb_ptr
+    addi $s5, $s5, 1        #increment cb_ptr
     j mainloop
     or $0, $0, $0
 
 main2: #cb is OPERATOR
     addi $s7, $0, 0         #set num = 0
-    beq $s2, $s3, main21     #check if oprt_stack is empty
+    beq $s2, $s3, main21    #check if oprt_stack is empty
     or $0, $0, $0
 
     #if oprt not empty
@@ -629,7 +702,8 @@ main2: #cb is OPERATOR
     beq $v0, $0, main21
     or $0, $0, $0
 
-    #calc subroutine
+    #calc subroutine : Pops oprd and oprt, determines math func
+    #                  Pushes return value of math function
     jal OPRDPOP
     or $0, $0, $0
     add $a2, $0, $v0
@@ -641,7 +715,7 @@ main2: #cb is OPERATOR
     add $a0, $0, $v0
     jal CALC
     or $0, $0, $0
-    beq $a3, $0, main22 #if notmod branch to end1
+    beq $a3, $0, main22     #if notmod branch to end1
     add $a0, $0, $v1
     jal OPRDPUSH
     or $0, $0, $0
@@ -662,17 +736,14 @@ main21:
     or $0, $0, $0
 
 error: 
-    #TODO : PRINT OUT ERROR MESSAGE
-    #addi $v0, $0, 4
-    #lui $a0, 0x1000
-    #or $a0, $a0, 0x????
-    #syscall
-    #j done
+    addi $v0, $0, 4         #print SYNTAX ERROR
+    lui $a0, 0x1000
+    or $a0, $a0, 0x0010
+    syscall
+    j done
 
 end:
-    #TODO : WHILE LOOP POPPING OPRT_STACK
-    #STATUS : TEST
-    beq $s2, $s3, done #branch if operator stack is empty
+    beq $s2, $s3, done      #branch if operator stack is empty
     or $0, $0, $0
     jal OPRDPOP
     or $0, $0, $0
@@ -683,10 +754,10 @@ end:
     jal OPRTPOP
     or $0, $0, $0
     add $a0, $0, $v0
-    addi $a3, $0, 0     #reset a3 mod check to 0
+    addi $a3, $0, 0         #reset a3 mod check to 0
     jal CALC
     or $0, $0, $0
-    beq $a3, $0, end1 #if notmod branch to end1
+    beq $a3, $0, end1       #if notmod branch to end1
     or $0, $0, $0
     add $a0, $0, $v1
     jal OPRDPUSH
@@ -706,8 +777,8 @@ done:
 #      ________________  ( /)
 #     ()__)____________)))))
                         
-    lw $t0, 0($s0)      #store final value
-    or $0, $0, $0
-    sh $t0, 0($t5)      #t5 holds mem addr to store
+    lw $t0, 0($s0)        #store final value
+    or $0, $0, $0   
+    sh $t0, 0($t5)        #t5 holds mem addr to store
     or $0, $0, $0
     
