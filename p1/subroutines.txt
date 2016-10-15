@@ -1,63 +1,108 @@
-subroutine list:
+###############  DATA ADDRESSES  ###############
+							a = 0x1000 0000
+							b = 0x1000 0002
+							c = 0x1000 0004
+							d = 0x1000 0006
+							e = 0x1000 0008
+  operand stack	= 0x1000 0010
+ operator stack	= 0x1000 0050
+     expression	= 0x1000 0090
 
-________Math_Functions___________
-1. add
-# PARAM  :
-# RETURN :
+###############  SAVED REGISTERS  ###############
+$s0 = operand stack addr     
+$s1 = operand stack pointer  
+$s2 = operator stack addr    
+$s3 = operator stack pointer 
+$s4 = expression addr        
+$s5 = current byte ptr       
+$s6 = current byte               
+$s7 = num bit               
 
-2. sub
-# PARAM  :
-# RETURN :
+###############  SUBROUTINE LIST  ###############
+ ____________________________________________
+/_______________math_functions______________/|
+|___________________________________________|/
 
+1. ADD
+# $a1 + $a2 = $v0
+# PARAM  : $a1, $a2
+# RETURN : $v0
 
-3. mult
-# PARAM  :
-# RETURN :
+2. SUB
+# $a1 - $a2 = $v0
+# PARAM  : $a1, $a2
+# RETURN : $v0
 
-4. div
-# PARAM  :
-# RETURN :
+3. MULT
+# Returns the product of two numbers
+# $a1 * $a2 = $v0
+# PARAM  : $a1, $a2
+# RETURN : $v0
 
-5. mod
-# PARAM  :
-# RETURN :
+4. DIVIDE
+# Returns the quotient and remainder of two numbers
+# $a1 / $a2 = $v0, remainder = $v1
+# PARAM  : $a1, $a2
+# RETURN : $v0,$v1
 
+5. CALC
+# PARAM  : $a0, $a1, $a2
+# RETURN : $v0, $v1(DIVIDE and MOD), $v2(mod) // 0=notmod, 1=mod
+ _____________________________________________
+/_______________byte_operations______________/|
+|____________________________________________|/
 
-________Byte_Operations__________
-1. isoprt
+1. ISVALID
+# Determines whether current bytes
+# is a valid input
+# [0-9,+,-,*,/,%,a-e]
+# PARAM  : $a0
+# RETURN : $v0 // 0=invalid, 1=valid
+
+2. ISOPRT
 # Determines whether the given
 # byte is an operator or operand
 # PARAM	 : $a0
 # RETURN : $v0 // 0=operand, 1=operator
 
-2. prec
-# Returns the value of the expression
+3. ISVAR
+# Determines whether the given
+# byte is a variable [a-e]
+# If so, sets $v1 to value in memory of var
+# PARAM  : $a0
+# RETURN : $v0 // 0=false, 1=true
+		   $v1
+
+4. PREC
+# Compares precedence and
+# returns the value of the expression
 # prec($a0) < prec(oprt.top)
 # PARAM  : $a0
 # RETURN : $v0 // 0=false, 1=true
+ ______________________________________________
+/_______________stack_operations______________/|
+|_____________________________________________|/
 
-
-________Stack_Operations_________
-1. oprdpush
+1. OPRDPUSH
 # Pushes a half word to 
 # operand array stack
 # PARAM	 : $a0
 # RETURN : $v0 // 0=fail, 1=success
 
-2. oprdpop
+2. OPRDPOP
 # Returns the top of 
 # operand array stack
 # PARAM	 : null
 # RETURN : $v0 = top of stack
 #		   $v1 // 0=fail 1=success
 
-3. oprtpush
+3. OPRTPUSH
 # Pushes a half word to 
 # operator array stack
 # PARAM	 : $a0
 # RETURN : $v0 // 0=fail, 1=success
 
-4. oprtpop
+4. OPRTPOP
 # Returns the top of 
 # operator array stack
 # PARAM	 : null
