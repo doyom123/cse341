@@ -43,6 +43,10 @@
 #        9 = 57
 
 .globl main
+.globl mainass
+.globl mainassop
+.globl mainassop1
+.globl mainassop
 .globl mainloop
 .globl main1
 .globl main11
@@ -91,18 +95,32 @@
 .globl oprtpop1
 
 .data
-a: .half 32
-b: .half 923
-c: .half 0x6214
-d: .half 4
-e: .half 17
-empty: .space 6
-oprd: .space 64              # 0x1000 0010 max_size = 16
-oprt: .space 64              # 0x1000 0050 max_size = 16
-exp: .asciiz "c:=258+b/a+b*3" # 0x1000 0090
+#####VARIABLES#####
+a: .half 23
+b: .half 4
+c: .half 971
+d: .half 0xFFFC
+e: .half 10
+###################
+empty1: .space 6
+err_msg : .asciiz "SYNTAX ERROR"
+empty: .space 2
+
+oprd: .space 128       # 0x1000 0020 max_size = 32
+oprt: .space 128       # 0x1000 0060 max_size = 32
+empty2: .space 1
+
+#####EXPRESSION#####
+exp: .asciiz "e:=45+b-c/a" # 0x1000 0120
+####################
+
+
+
 
 .text
-#________________<>MATH FUNCTIONS<>________________ 
+###################################################
+#________________<>MATH FUNCTIONS<>________________
+################################################### 
 ADD:
     add $v0, $a1, $a2
     jr $ra
@@ -186,10 +204,11 @@ d4:
     or $0, $0, $0       #nop
     sub $v0, $0, $v0
 dend:
-    jr $ra              #return to main
+    jr $ra              #return
     add $0, $0, $0      #nop
 
 CALC: #TODO : TEST
+    addi $a3, $0, 0     #reset a3 mod check to 0
     addi $t0, $0, 43 # +
     beq $a0, $t0, ADD 
     or $0, $0, $0
@@ -206,9 +225,13 @@ CALC: #TODO : TEST
     beq $a0, $t0, DIVIDE 
     or $0, $0, $0
 
-    addi $t0, $0, 37 # %
+    addi $t0, $0, 37 # /
     beq $a0, $t0, DIVIDE 
-    addi $v2, $0, 1         #set v2 0=notmod, 1=mod
+    addi $a3, $0, 1
+
+    # addi $t0, $0, 37 # %
+    # beq $a0, $t0, DIVIDE 
+    # addi $v2, $0, 1         #set v2 0=notmod, 1=mod
 
 ###################################################
 #________________<>BYTE_OPERATIONS<>_______________
@@ -389,7 +412,8 @@ PREC:
     addi $t0, $0, 1         #set PREC(a1) = 1
 prec1:
     #Find PREC(oprt.top)
-    lw $t1, -4($s3)         #load oprt.top in $t0
+    lw $t1, -4($s3)         #load oprt.top in $t1
+    or $0, $0, $0
     addi $t2, $t1, -43      #compare oprt.top to '+'
     beq $t2, $0, prec2      #branch if equal to '+'
     addi $t2, $0, 0         #set PREC(oprt.top) = 0
@@ -398,9 +422,16 @@ prec1:
     addi $t2, $0, 0         #set PREC(oprt.top) = 0
     addi $t2, $0, 1         #set PREC(oprt.top) = 1
 prec2:
-    slt $v0, $t0, $t2       #evaluate $a0 < oprt.top
+    slt $v0, $t2, $t0       #evaluate $a0 <= oprt.top
+    beq $v0, $0, prec3 
+    or $0, $0, $0
+    addi $v0, $0, 0
+    jr $ra                  #return in v0 ~(a0 > oprt.top)
+    or $0, $0, $0
+prec3:
+    add $v0, $0, 1
     jr $ra
-    or $0, $0, $0           #nop
+    or $0, $0, $0  
 ###################################################
 #_______________<>STACK_OPERATIONS<>_______________
 ###################################################
@@ -419,6 +450,8 @@ OPRDPOP:
     addi $v1, $0, 0         #set fail return 0
     lw $v0, -4($s1)         #pop from oprd_stack
     addi $s1, $s1, -4       #decrement oprd_ptr
+    addi $t0, $0, 0
+    sw $t0, 0($s1)
     addi $v1, $0, 1         #set success return 1
 oprdpop1:
     jr $ra                  #return
@@ -439,6 +472,8 @@ OPRTPOP:
     addi $v1, $0, 0         #set fail return 0
     lw $v0, -4($s3)         #pop from oprt_stack
     addi $s3, $s3, -4       #decrement oprt_ptr
+    addi $t0, $0, 0
+    sw $t0, 0($s3)
     addi $v1, $0, 1         #set success return 1
 oprtpop1:
     jr $ra                  #return
@@ -450,27 +485,73 @@ main:
     #Preprocessing
     #Setup stack addresses and pointers
     lui $s0, 0x1000         #load oprd_stack_addr
-    or  $s0, $s0, 0x0010
+    or  $s0, $s0, 0x0020
     lui $s1, 0x1000         #load oprd_stack_ptr
-    or  $s1, $s1, 0x0010
+    or  $s1, $s1, 0x0020
     lui $s2, 0x1000         #load oprt_stack_addr
-    or  $s2, $s2, 0x0050
+    or  $s2, $s2, 0x00A0
     lui $s3, 0x1000         #load oprt_stack_ptr
-    or  $s3, $s3, 0x0050
+    or  $s3, $s3, 0x00A0
     lui $s4, 0x1000         #load expr_addr
-    or  $s4, $s4, 0x0090
+    or  $s4, $s4, 0x0120
     addi $s7, $0, 0         #initialize num = 0
     
+
     # TODO HANDLE ASSIGNMENT
+    lui $s5, 0x1000         #load current_byte_addr
+    or  $s5, $s5, 0x0120 
+mainass:
+    lb $s6, 0($s5)         #load current byte
+    or $0, $0, $0
+    addi $t0, $0, 32       #check if cb == space
+    beq $s6, $t0, mainass
+    addi $s5, $s5 1
 
-    lui $s5, 0x1000         #load current_byte_ptr
-    or  $s5, $s5, 0x0093  
 
+    add $a0, $0, $s6       #check if cb is var
+    jal ISVAR
+    or $0, $0, $0
+    add $t5, $0, $t1
+    beq $v0, $0, error     #if not var, error
+    or $0, $0, $0
+
+mainassop:
+    lb $s6, 0($s5)         #load current byte
+    or $0, $0, $0
+
+    addi $t0, $0, 32       #check if cb == space
+    beq $s6, $t0, mainassop
+    addi $s5, $s5, 1
+    
+    addi $t0, $0, 58       #check fi cb = ':''
+    beq $t0, $s6, mainassop1
+    or $0, $0, $0
+    j error 
+    or $0, $0, $0
+mainassop1:
+    lb $s6, 0($s5)
+    addi $s5, $s5, 1
+    addi $t0, $0, 61        #check if cb = '='
+    beq $t0, $s6, mainassop2
+    or $0, $0, $0    
+
+    j error
+    or $0, $0, $0
+mainassop2:
+    addi $s7, $0, 0         #reset num bit to 0
 mainloop:    
     #Get current byte right after '='
   
     lb  $s6, 0($s5)         #load current_byte
     or $0, $0, $0
+
+    # cb = $s6
+    addi $t0, $0, 32        #check if cb == space
+    beq $s6, $t0, mainloop  
+    addi $s5, $s5, 1
+
+    addi $s5, $s5, -1
+
     #Evaluate current byte
     add $a0, $0, $s6        #check if cb is valid
     jal ISVALID
@@ -481,10 +562,9 @@ mainloop:
     beq $s6, $0, end        #check if cb == NULL
     or $0, $0, $0
 
-    # cb = $s6
-    addi $t0, $0, 32        #check if cb == space
-    beq $s6, $t0, mainloop  
-    or $0, $0, $0
+    
+
+
 
     add $a0, $0, $s6        #check if cb is a var
     jal ISVAR
@@ -552,23 +632,23 @@ main2: #cb is OPERATOR
     #calc subroutine
     jal OPRDPOP
     or $0, $0, $0
-    add $a1, $0, $v0
+    add $a2, $0, $v0
     jal OPRDPOP
     or $0, $0, $0
-    add $a2, $0, $v0
+    add $a1, $0, $v0
     jal OPRTPOP
     or $0, $0, $0
     add $a0, $0, $v0
     jal CALC
     or $0, $0, $0
-    beq $v2, $0, main22 #if notmod branch to end1
-    add $a0, $0, $v0
+    beq $a3, $0, main22 #if notmod branch to end1
+    add $a0, $0, $v1
     jal OPRDPUSH
     or $0, $0, $0
-    j end
+    j main2
     or $0, $0, $0
 main22:  #TEST
-    add $a0, $0, $v1
+    add $a0, $0, $v0
     jal OPRDPUSH
     or $0, $0, $0,
     j main2
@@ -596,23 +676,25 @@ end:
     or $0, $0, $0
     jal OPRDPOP
     or $0, $0, $0
-    add $a1, $0, $v0
+    add $a2, $0, $v0
     jal OPRDPOP
     or $0, $0, $0
-    add $a2, $0, $v0
+    add $a1, $0, $v0
     jal OPRTPOP
     or $0, $0, $0
     add $a0, $0, $v0
+    addi $a3, $0, 0     #reset a3 mod check to 0
     jal CALC
     or $0, $0, $0
-    beq $v2, $0, end1 #if notmod branch to end1
-    add $a0, $0, $v0
+    beq $a3, $0, end1 #if notmod branch to end1
+    or $0, $0, $0
+    add $a0, $0, $v1
     jal OPRDPUSH
     or $0, $0, $0
     j end
     or $0, $0, $0
-end1:  #is mod, OPRDPUSH v1 instead of v0
-    add $a0, $0, $v1
+end1:  #not mod, OPRDPUSH push v0
+    add $a0, $0, $v0
     jal OPRDPUSH
     or $0, $0, $0,
     j end
@@ -622,7 +704,10 @@ done:
 #                        (  )/  
 #                         )(/
 #      ________________  ( /)
-#     ()__)____________)))))  
-
+#     ()__)____________)))))
+                        
+    lw $t0, 0($s0)      #store final value
+    or $0, $0, $0
+    sh $t0, 0($t5)      #t5 holds mem addr to store
     or $0, $0, $0
     

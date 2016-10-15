@@ -1,9 +1,9 @@
 ###############  DATA ADDRESSES  ###############
-							a = 0x1000 0000
-							b = 0x1000 0002
-							c = 0x1000 0004
-							d = 0x1000 0006
-							e = 0x1000 0008
+   			  a = 0x1000 0000  
+			  b = 0x1000 0002  
+			  c = 0x1000 0004  
+			  d = 0x1000 0006  
+			  e = 0x1000 0008  
   operand stack	= 0x1000 0010
  operator stack	= 0x1000 0050
      expression	= 0x1000 0090
@@ -16,7 +16,8 @@ $s3 = operator stack pointer
 $s4 = expression addr        
 $s5 = current byte ptr       
 $s6 = current byte               
-$s7 = num bit               
+$s7 = assop/num bit              
+$t5 = assignment addr 
 
 ###############  SUBROUTINE LIST  ###############
  ____________________________________________
@@ -47,7 +48,7 @@ $s7 = num bit
 
 5. CALC
 # PARAM  : $a0, $a1, $a2
-# RETURN : $v0, $v1(DIVIDE and MOD), $v2(mod) // 0=notmod, 1=mod
+# RETURN : $v0, $v1(DIVIDE and MOD), $a3(mod) // 0=notmod, 1=mod
  _____________________________________________
 /_______________byte_operations______________/|
 |____________________________________________|/
@@ -73,10 +74,18 @@ $s7 = num bit
 # RETURN : $v0 // 0=false, 1=true
 		   $v1
 
-4. PREC
+4. ISVARADDR		
+# Determines whether the given
+# byte is a variable [a-e]
+# If so, sets $v1 to addr of var
+# PARAM  : $a0
+# RETURN : $v0 // 0=false, 1=true
+		   $v1 = addr
+
+5. PREC
 # Compares precedence and
 # returns the value of the expression
-# prec($a0) < prec(oprt.top)
+# prec($a0) <= prec(oprt.top)
 # PARAM  : $a0
 # RETURN : $v0 // 0=false, 1=true
  ______________________________________________
