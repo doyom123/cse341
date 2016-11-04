@@ -173,11 +173,11 @@
 
 .data
 #####VARIABLES#####
-a: .half 541
-b: .half 8290
-c: .half 0xF0C8
-d: .half 12348
-e: .half 19
+a:          .half 0 
+b:          .half 0xFFFF 
+c:          .half 0xCE20 
+d:          .half 1 
+e:          .half 102 
 ###################
 empty1: .space 6
 err_msg : .asciiz "SYNTAX ERROR"
@@ -188,7 +188,7 @@ oprt: .space 128       # 0x1000 0060 oprt stack max_size = 32
 empty2: .space 1
 
 #####EXPRESSION#####
-exp: .asciiz "a:=1428 / e - a  * 9172 + 598*b   + d % 2023 +5000 " # 0x1000 0120
+exp: .asciiz "e:=e   - 43 *     e+   e%17+462    - c   /   4" # 0x1000 0120
 ####################
 
 
@@ -277,14 +277,14 @@ d4:
     bne $t0, $0, dloop  #branch to dloop if counter = 0
     or $0, $0, $0       #nop
 
-    beq $t7,  $0, dend  #TODO : set sign to result $v0
+    beq $t7,  $0, dend  
     or $0, $0, $0       #nop
     sub $v0, $0, $v0
 dend:
     jr $ra              #return
     add $0, $0, $0      #nop
 
-CALC: #TODO : TEST
+CALC: 
     addi $a3, $0, 0     #reset a3 mod check to 0
     addi $t0, $0, 43 # +
     beq $a0, $t0, ADD 
@@ -306,15 +306,11 @@ CALC: #TODO : TEST
     beq $a0, $t0, DIVIDE 
     addi $a3, $0, 1
 
-    # addi $t0, $0, 37 # %
-    # beq $a0, $t0, DIVIDE 
-    # addi $v2, $0, 1         #set v2 0=notmod, 1=mod
-
 ###################################################
 #________________<>BYTE_OPERATIONS<>_______________
 ###################################################
 ISVALID:
-    addi $t0, $0, 97
+    addi $t0, $0, 97        #redundant
     sub $t0, $a0, $t0
     beq $t0, $0, isvalid1
     addi $v0, $0, 1
@@ -364,7 +360,7 @@ ISVALID:
     addi $v0, $0, 1
     addi $t0, $0, 55
     sub $t0, $a0, $t0
-    beq $t0, $0, isvalid1
+    beq $t0, $0, isvalid1   #still redundant
     addi $v0, $0, 1
     addi $t0, $0, 56
     sub $t0, $a0, $t0
@@ -404,7 +400,7 @@ ISVALID:
     addi $v0, $0, 1
     addi $t0, $0, 0
     sub $t0, $a0, $t0
-    beq $t0, $0, isvalid1
+    beq $t0, $0, isvalid1   #yeah
     addi $v0, $0, 1
     addi $v0, $0, 0
 isvalid1:
@@ -572,9 +568,6 @@ main:
     lui $s4, 0x1000         #load expr_addr
     or  $s4, $s4, 0x0120
     addi $s7, $0, 0         #initialize num = 0
-    
-
-    # TODO HANDLE ASSIGNMENT
     lui $s5, 0x1000         #load current_byte_addr
     or  $s5, $s5, 0x0120 
 mainass:
@@ -583,23 +576,18 @@ mainass:
     addi $t0, $0, 32       #check if cb == space
     beq $s6, $t0, mainass
     addi $s5, $s5 1
-
-
     add $a0, $0, $s6       #check if cb is var
     jal ISVAR
     or $0, $0, $0
     add $t5, $0, $t1
     beq $v0, $0, error     #if not var, error
     or $0, $0, $0
-
 mainassop:
     lb $s6, 0($s5)         #load current byte
     or $0, $0, $0
-
     addi $t0, $0, 32       #check if cb == space
     beq $s6, $t0, mainassop
     addi $s5, $s5, 1
-    
     addi $t0, $0, 58       #check fi cb = ':''
     beq $t0, $s6, mainassop1
     or $0, $0, $0
@@ -611,34 +599,27 @@ mainassop1:
     addi $t0, $0, 61        #check if cb = '='
     beq $t0, $s6, mainassop2
     or $0, $0, $0    
-
     j error
     or $0, $0, $0
 mainassop2:
     addi $s7, $0, 0         #reset num bit to 0
 mainloop:    
     #Get current byte right after '='
-  
     lb  $s6, 0($s5)         #load current_byte
     or $0, $0, $0
-
     # cb = $s6
     addi $t0, $0, 32        #check if cb == space
     beq $s6, $t0, mainloop  
     addi $s5, $s5, 1
-
     addi $s5, $s5, -1
-
     #Evaluate current byte
     add $a0, $0, $s6        #check if cb is valid
     jal ISVALID
     or $0, $0, $0
     beq $v0, $0, error
     or $0, $0, $0
-
     beq $s6, $0, end        #check if cb == NULL
     or $0, $0, $0
-
     add $a0, $0, $s6        #check if cb is a var
     jal ISVAR
     or $0, $0, $0
@@ -654,20 +635,16 @@ main1:
     addi $t0, $0, 1
     beq $v0, $t0, main2     #if cb is oprt, branch
     or $0, $0, $0
-    
     #cb is OPERAND
     addi $s7, $s7, 1        #increment num bit
     addi $s6, $s6, -48      #turn ascii char to int
-
     beq $s0, $s1, main11    #check if oprd is empty
     or $0, $0, $0
-
     #if oprd not empty
     addi $t0, $0, 1         #check if num > 1
     slt $t0, $t0, $s7
     beq $t0, $0, main11     #if not, branch to OPRDPUSH
     or $0, $0, $0
-    
     #multidigit handler
     jal OPRDPOP             #temp = oprd.top
     or $0, $0, $0           
@@ -681,27 +658,22 @@ main1:
     addi $s5, $s5, 1        #increment cb_ptr
     j mainloop
     or $0, $0, $0
-
 main11:
     add $a0, $0, $s6        #push cb to oprd
     jal OPRDPUSH
     addi $s5, $s5, 1        #increment cb_ptr
     j mainloop
     or $0, $0, $0
-
 main2: #cb is OPERATOR
     addi $s7, $0, 0         #set num = 0
     beq $s2, $s3, main21    #check if oprt_stack is empty
     or $0, $0, $0
-
     #if oprt not empty
     add $a0, $0, $s6        #evaluate precedence
     jal PREC
     or $0, $0, $0
-
     beq $v0, $0, main21
     or $0, $0, $0
-
     #calc subroutine : Pops oprd and oprt, determines math func
     #                  Pushes return value of math function
     jal OPRDPOP
@@ -721,27 +693,24 @@ main2: #cb is OPERATOR
     or $0, $0, $0
     j main2
     or $0, $0, $0
-main22:  #TEST
+main22: 
     add $a0, $0, $v0
     jal OPRDPUSH
     or $0, $0, $0,
     j main2
     or $0, $0, $0
-    
 main21:
     add $a0, $0, $s6        #push cb to oprt
     jal OPRTPUSH
     addi $s5, $s5, 1        #increment cb_ptr
     j mainloop
     or $0, $0, $0
-
 error: 
     addi $v0, $0, 4         #print SYNTAX ERROR
     lui $a0, 0x1000
     or $a0, $a0, 0x0010
     syscall
     j done
-
 end:
     beq $s2, $s3, done      #branch if operator stack is empty
     or $0, $0, $0
