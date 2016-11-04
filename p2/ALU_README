@@ -1,0 +1,18 @@
+MODULES-------------------------------------------------
+[1bit]  fulladder(sum, cout, a, b, cin)
+[4bit]  clablock(sum, cout, a, b, cin)
+[32bit] cla(sum, cout, a, b, cin)
+
+[1bit]  submux(out, b, op)
+[32bit] submuxfull(out, op, b)
+
+[1bit]  overflow(out,a31, b31, result31)
+[32bit] zero(out, in)
+[32bit] andfull(out, a, b)
+[32bit] orfull(out, a, b)
+
+[1bit]  alumux(out, a, b, c, d, op)
+[32bit] alumuxfull(out, a, b, c, d, op)
+
+[32bit] alu(result, cout, zero, set, overflow, a, b, op)
+
