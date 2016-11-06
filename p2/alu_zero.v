@@ -271,10 +271,10 @@ module tb();
 		// 				 i,a,b,op,result,overflow,set,cout);
 
 		// tests for AND
-		for(i=0; i < 500; i=i+1) begin
-			#20 a = $random % MAX_32;
-			b = $random % MIN_32;
-			op = 3'b000;
+		for(i=0; i < 10; i=i+1) begin
+			#20 a = $random % 10;
+			b = $random % 10;
+			op = 3'b100;
 		end
 
 		// tests for OR

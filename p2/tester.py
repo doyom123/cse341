@@ -27,19 +27,26 @@ for line in lines[1:]:
 	elif(op == '010'):
 		result_t = a + b
 	elif(op == '100'):
-		result_t = a & (-1*b)
+		b *= -1;
+		result_t = a & b
 	elif(op == '101'):
-		result_t = a | (-1*b)
+		b *= -1;
+		result_t = a | (-1 * b)
 	elif(op == '110'):
 		result_t = a - b
 	else:
 		result_t = result
 
 	if result==result_t:
-		print 'O',
+		print 'O', op
 		print a, ops[op], b, '=', result, '=', result_t, '\n'
 
 	else:
-		print 'X'
-		print a, ops[op], b, '=', result, '=', result_t, '\n'
+		print 'X', op
+		print a, ops[op], b, '=', result, '=', result_t
+		print bin(a)
+		print bin(b)
+		print '-----'
+		print bin(result)
+		print bin(result_t), '\n\n'
 	
