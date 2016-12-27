@@ -1,4 +1,55 @@
-MODULES-------------------------------------------------
+____DIRECTIONS__________________________________________ 
+1.run './p2main.py'
+ - p2main.py consists of
+ - a) alu_zero_tester runs alu_zero.v and checks whether 
+      output result is correct
+ - b) alu_unit_5000_avg.py runs alu_unit_5000_avg.v and
+ 	  calculates average exec time over 5000 random inputs
+2. run './alu_unit_temporal.out'
+ - demonstrates temporal dependence of delays over 
+   5 example inputs 
+
+
+
+____ALU_MODEL___________________________________________
+				
+			  op[3]___
+					  |
+				______|______
+				| 			|---->result[32]
+		a[32]-->|   		|---->overflow[1]
+				|	 ALU	|---->zero[1]
+		b[32]-->|			|---->set[1]
+				|___________|---->cout[1]
+
+
+inputs: a[32], b[32], ops = '000' &
+	  						'001' |
+	  						'010' +
+	  						'110' -
+	  						'100' BEQ
+	  						'111' SLT
+
+outputs: result[32]: 
+			output of AND, OR, ADD, SUB ops
+		 overflow[1]:
+		 	1 if overflow occurs
+		 	0 if overflow does not occur
+		 zero[1]:
+		 	1 if a == b
+		 	0 if a != b
+		 set[1]:
+		 	1 if a < b
+		 	0 if a >= b
+		 cout[1]:
+		 	1 if MSB of result == 1
+		 	0 if MSB of result == 0
+
+
+
+
+____VERILOG_MODULES_____________________________________
+
 [1bit]  fulladder(sum, cout, a, b, cin)
 [4bit]  clablock(sum, cout, a, b, cin)
 [32bit] cla(sum, cout, a, b, cin)
@@ -15,5 +66,7 @@ MODULES-------------------------------------------------
 [32bit] alumuxfull(out, a, b, c, d, op)
 
 [32bit] alu(result, cout, zero, set, overflow, a, b, op)
+
+
 
 

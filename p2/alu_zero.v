@@ -31,10 +31,10 @@ module clablock(sum, cout, a, b, cin);
 		o2(p[2], a[2], b[2]),
 		o3(p[3], a[3], b[3]);
 	and a4(gp0, g[0], p[1]);
-	or  o4(gp1, gp0, g[1]);
-	and a5(gp2, gp1, p[2]);
-	or  o5(gp3, gp2, g[2]);
-	and a6(gp4, gp3, p[3]);
+	or  o4(gp1, gp0,  g[1]);
+	and a5(gp2, gp1,  p[2]);
+	or  o5(gp3, gp2,  g[2]);
+	and a6(gp4, gp3,  p[3]);
 	or  o6(gpout, gp4, g[3]);
 	//Propagate
 	and a7(p0, p[0], p[1]),
@@ -137,12 +137,12 @@ module andfull(out, a, b);
 	output [31:0] out;
 	and a0 (out[0],  a[0],  b[0]),  a1(out[1],  a[1],  b[1]),  a2(out[2],  a[2],  b[2]),  a3(out[3],  a[3],   b[3]),
 		a4 (out[4],  a[4],  b[4]),  a5(out[5],  a[5],  b[5]),  a6(out[6],  a[6],  b[6]),  a7(out[7],  a[7],   b[7]),
-		a8 (out[8],  a[8],  b[8]),  a5(out[9],  a[9],  b[9]),  a6(out[10], a[10], b[10]), a7(out[11], a[11], b[11]),
-		a12(out[12], a[12], b[12]), a5(out[13], a[13], b[13]), a6(out[14], a[14], b[14]), a7(out[15], a[15], b[15]),
-		a16(out[16], a[16], b[16]), a5(out[17], a[17], b[17]), a6(out[18], a[18], b[18]), a7(out[19], a[19], b[19]),
-		a20(out[20], a[20], b[20]), a5(out[21], a[21], b[21]), a6(out[22], a[22], b[22]), a7(out[23], a[23], b[23]),
-		a24(out[24], a[24], b[24]), a5(out[25], a[25], b[25]), a6(out[26], a[26], b[26]), a7(out[27], a[27], b[27]),
-		a28(out[28], a[28], b[28]), a5(out[29], a[29], b[29]), a6(out[30], a[30], b[30]), a7(out[31], a[31], b[31]);
+		a8 (out[8],  a[8],  b[8]),  a9(out[9],  a[9],  b[9]),  a10(out[10], a[10], b[10]), a11(out[11], a[11], b[11]),
+		a12(out[12], a[12], b[12]), a13(out[13], a[13], b[13]), a14(out[14], a[14], b[14]), a15(out[15], a[15], b[15]),
+		a16(out[16], a[16], b[16]), a17(out[17], a[17], b[17]), a18(out[18], a[18], b[18]), a19(out[19], a[19], b[19]),
+		a20(out[20], a[20], b[20]), a21(out[21], a[21], b[21]), a22(out[22], a[22], b[22]), a23(out[23], a[23], b[23]),
+		a24(out[24], a[24], b[24]), a25(out[25], a[25], b[25]), a26(out[26], a[26], b[26]), a27(out[27], a[27], b[27]),
+		a28(out[28], a[28], b[28]), a29(out[29], a[29], b[29]), a30(out[30], a[30], b[30]), a31(out[31], a[31], b[31]);
 endmodule
 
 // 32 bit OR operation
@@ -151,12 +151,12 @@ module orfull(out, a, b);
 	output [31:0] out;
 	or  a0 (out[0],  a[0],  b[0]),  a1(out[1],  a[1],  b[1]),  a2(out[2],  a[2],  b[2]),  a3(out[3],  a[3],  b[3]),
 		a4 (out[4],  a[4],  b[4]),  a5(out[5],  a[5],  b[5]),  a6(out[6],  a[6],  b[6]),  a7(out[7],  a[7],  b[7]),
-		a8 (out[8],  a[8],  b[8]),  a5(out[9],  a[9],  b[9]),  a6(out[10], a[10], b[10]), a7(out[11], a[11], b[11]),
-		a12(out[12], a[12], b[12]), a5(out[13], a[13], b[13]), a6(out[14], a[14], b[14]), a7(out[15], a[15], b[15]),
-		a16(out[16], a[16], b[16]), a5(out[17], a[17], b[17]), a6(out[18], a[18], b[18]), a7(out[19], a[19], b[19]),
-		a20(out[20], a[20], b[20]), a5(out[21], a[21], b[21]), a6(out[22], a[22], b[22]), a7(out[23], a[23], b[23]),
-		a24(out[24], a[24], b[24]), a5(out[25], a[25], b[25]), a6(out[26], a[26], b[26]), a7(out[27], a[27], b[27]),
-		a28(out[28], a[28], b[28]), a5(out[29], a[29], b[29]), a6(out[30], a[30], b[30]), a7(out[31], a[31], b[31]);
+		a8 (out[8],  a[8],  b[8]),  a9(out[9],  a[9],  b[9]),  a10(out[10], a[10], b[10]), a11(out[11], a[11], b[11]),
+		a12(out[12], a[12], b[12]), a13(out[13], a[13], b[13]), a14(out[14], a[14], b[14]), a15(out[15], a[15], b[15]),
+		a16(out[16], a[16], b[16]), a17(out[17], a[17], b[17]), a18(out[18], a[18], b[18]), a19(out[19], a[19], b[19]),
+		a20(out[20], a[20], b[20]), a21(out[21], a[21], b[21]), a22(out[22], a[22], b[22]), a23(out[23], a[23], b[23]),
+		a24(out[24], a[24], b[24]), a25(out[25], a[25], b[25]), a26(out[26], a[26], b[26]), a27(out[27], a[27], b[27]),
+		a28(out[28], a[28], b[28]), a29(out[29], a[29], b[29]), a30(out[30], a[30], b[30]), a31(out[31], a[31], b[31]);
 endmodule
 
 // 4 to 1 MUX
@@ -240,20 +240,16 @@ module alu(result, cout, zero, set, overflow, a, b, op);
 	orfull o1(orout, a, b);   
 	submuxfull s1(bin, op[2], b);
 	cla c1(addout, cout, a, bin, op[2]);
-	// CLA for set and zero, pretty redundant
-	submuxfull s2(bin2, 1'b1, b);
-	cla c2(subout, cout1, a, bin2, 1'b1);
-	zero z1(zero, subout);
-	buf b1(set, subout[31]);
-	// Overflow
+	zero z1(zero, addout);
+	buf b1(set, addout[31]);
 	overflow of1(overflow, a[31], b[31], addout[31]);
-	
 	alumuxfull amux(result, andout, orout, addout, 1'b0, op[1:0]);
 endmodule
 
 module tb();
 	// inputs to DUT are reg
 	parameter MAX_32 = 2147483647;
+	// parameter MAX_32 = 10;
 	parameter MIN_32 = -2147483648;
 	reg signed [31:0] a, b;
 	reg [2:0] op;
@@ -265,37 +261,104 @@ module tb();
 	alu a1(result, cout, zero, set, overflow, a, b, op);
 	initial
 	begin
-		$monitor($time,,"i= %d a= %d b= %d op= %b result= %d of= %b set= %b cout= %b",
-						 i,a,b,op,result,overflow,set,cout);
-		// $display($time,,"i=%d, a=%d, b=%d, op=%b, result=%d, of=%b, set=%b, cout=%b",
-		// 				 i,a,b,op,result,overflow,set,cout);
+		$monitor($time,,"i= %d a= %d b= %d op= %b result= %d of= %b set= %b cout= %b zero= %b",
+						 i,a,b,op,result,overflow,set,cout, zero);
+		// $display($time,,"i= %d a= %d b= %d op= %b result= %d of= %b set= %b cout= %b zero= %b",
+		// 				 i,a,b,op,result,overflow,set,cout, zero);
 
 		// tests for AND
-		for(i=0; i < 10; i=i+1) begin
-			#20 a = $random % 10;
-			b = $random % 10;
-			op = 3'b100;
+		#20 op = 3'b000;
+			a = 0;
+			b = -1;
+		#20 a = -1;
+			b = -1;
+		#20 a = MAX_32;
+			b = MIN_32;
+
+		for(i=0; i < 100; i=i+1) begin
+			#20 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b000;
 		end
 
 		// tests for OR
+		#20 op = 3'b001;
+			a = 0;
+			b = -1;
+		#20 a = -1;
+			b = -1;
+		#20 a = MAX_32;
+			b = MIN_32;
+		for(i=0; i < 100; i=i+
+			1) begin
+			#20 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b001;
+		end
 
-		// tests for AND
-		// for(i=0; i < 500; i=i+1) begin
-		// 	#20 a = $random % 10;
-		// 	b = $random % 10;
-		// 	op = 3'b010;
-		// end
-		// tests for SUB
-		// for(i=0; i < 500; i=i+1) begin
-		// 	#20 a = $random % 10;
-		// 	b = $random % 10;
-		// 	op = 3'b110;
-		// end
+		// // tests for ADD
+		#20 op = 3'b010;
+			a = MAX_32;
+			b = MAX_32;
+		#20 a = MIN_32;
+			b = MIN_32;
+		for(i=0; i < 100; i=i+1) begin
+			#20 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b010;
+		end
+
+		// // tests for SUB
+		#20 op = 3'b110;
+			a = MAX_32;
+			b = MAX_32;
+		#20 a = MIN_32;
+			b = MIN_32;
+
+		for(i=0; i < 100; i=i+1) begin
+			#20 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b110;
+		end
+
+		// tests for BEQ
+		#20 op = 3'b110;
+			a = 5;
+		    b = 5;
+		#20 a = 2;
+		    b = 0;
+		for(i=0; i < 100; i=i+1) begin
+			#20 
+			a = $random % MAX_32;
+			b = a;
+			op = 3'b100;
+		end
+
+		// tests for SLT
+		#20 op = 3'b111;
+			a = 5;
+		    b = 5;
+		#20 a = 5;
+		    b = 1;
+		#20 a = 1;
+		    b = 5;
+		for(i=0; i < 100; i=i+1) begin
+			#20 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b111;
+		end
+
+		// tests for random operation
+		for(i=0; i < 1000; i=i+1) begin
+			#20 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = $random % 9;
+		end
 	end
-
 endmodule
-
-
-
-
-

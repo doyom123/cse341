@@ -173,11 +173,11 @@
 
 .data
 #####VARIABLES#####
-a:          .half 0 
-b:          .half 0xFFFF 
-c:          .half 0xCE20 
-d:          .half 1 
-e:          .half 102 
+a:          .half 0x0024
+b:          .half 0x0140
+c:          .half 0x0005
+d:          .half 0x0096
+e:          .half 0x0540 
 ###################
 empty1: .space 6
 err_msg : .asciiz "SYNTAX ERROR"
@@ -188,7 +188,7 @@ oprt: .space 128       # 0x1000 0060 oprt stack max_size = 32
 empty2: .space 1
 
 #####EXPRESSION#####
-exp: .asciiz "e:=e   - 43 *     e+   e%17+462    - c   /   4" # 0x1000 0120
+exp: .asciiz "e:=a+29-4/y+c" # 0x1000 0120
 ####################
 
 

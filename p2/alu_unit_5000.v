@@ -1,15 +1,13 @@
-
-
 // 1 bit adder
 module fulladder(sum, cout, a, b, cin);
 	input a, b, cin;
 	output sum, cout;
 	wire w1, w2, w3;
-	xor x1(w1, a, b),
+	xor #1 x1(w1, a, b),
 		x2(sum, w1, cin);
-	and a1(w2, w1, cin),
+	and #1 a1(w2, w1, cin),
 		a2(w3, a, b);
-	or  o1(cout, w2, w3);
+	or #1 o1(cout, w2, w3);
 endmodule
 
 // 4 bit carry look ahead bloooooock
@@ -24,27 +22,27 @@ module clablock(sum, cout, a, b, cin);
 	wire c0;
 	wire [3:0]cout2;
 	//Generate
-	and a0(g[0], a[0], b[0]),
+	and #1 a0(g[0], a[0], b[0]),
 		a1(g[1], a[1], b[1]),
 		a2(g[2], a[2], b[2]),
 		a3(g[3], a[3], b[3]);
-	or  o0(p[0], a[0], b[0]),
+	or  #1 o0(p[0], a[0], b[0]),
 		o1(p[1], a[1], b[1]),
 		o2(p[2], a[2], b[2]),
 		o3(p[3], a[3], b[3]);
-	and a4(gp0, g[0], p[1]);
-	or  o4(gp1, gp0, g[1]);
-	and a5(gp2, gp1, p[2]);
-	or  o5(gp3, gp2, g[2]);
-	and a6(gp4, gp3, p[3]);
-	or  o6(gpout, gp4, g[3]);
+	and #1 a4(gp0, g[0], p[1]);
+	or  #1 o4(gp1, gp0, g[1]);
+	and #1 a5(gp2, gp1, p[2]);
+	or  #1 o5(gp3, gp2, g[2]);
+	and #1 a6(gp4, gp3, p[3]);
+	or  #1 o6(gpout, gp4, g[3]);
 	//Propagate
-	and a7(p0, p[0], p[1]),
+	and #1 a7(p0, p[0], p[1]),
 		a8(p1, p0, p[2]),
 		a9(pout, p1, p[3]);
 	//cout = g+p*cin
-	and a10(c0, cin, pout);
-	or  o7(cout, gpout, c0);
+	and #1 a10(c0, cin, pout);
+	or  #1 o7(cout, gpout, c0);
 	fulladder f1(sum[0], cout2[0], a[0], b[0], cin),
 	 		  f2(sum[1], cout2[1], a[1], b[1], cout2[0]),
 			  f3(sum[2], cout2[2], a[2], b[2], cout2[1]),
@@ -87,11 +85,11 @@ module submux(out, b, op);
 	input b, op;
 	output out;
 	wire notb, notop, w1, w2;
-	not n1(notb, b);
-	not n2(notop, op);
-	and a1(w1, b, notop);
-	and a2(w2, notb, op);
-	or o1(out, w1, w2);
+	not #1 n1(notb, b);
+	not #1 n2(notop, op);
+	and #1 a1(w1, b, notop);
+	and #1 a2(w2, notb, op);
+	or #1 o1(out, w1, w2);
 endmodule
 
 // 32 bit input MUX for subtraction
@@ -122,7 +120,7 @@ module zero(out, in);
 	input [31:0] in;
 	output out;
 	wire [31:0] w;
-	or o0 (w[0] , in[0], in[1]) , o1 (w[1] , w[0] , in[2]) , o2 (w[2] , w[1],  in[3]) , o3 (w[3] , w[2] , in[4]),
+	or #1 o0 (w[0] , in[0], in[1]) , o1 (w[1] , w[0] , in[2]) , o2 (w[2] , w[1],  in[3]) , o3 (w[3] , w[2] , in[4]),
 	   o4 (w[4] , w[3] , in[5]) , o5 (w[5] , w[4] , in[6]) , o6 (w[6] , w[5],  in[7]) , o7 (w[7] , w[6] , in[8]),
 	   o8 (w[8] , w[7] , in[9]) , o9 (w[9] , w[8] , in[10]), o10(w[10], w[9],  in[11]), o11(w[11], w[10], in[12]),
 	   o12(w[12], w[11], in[13]), o13(w[13], w[12], in[14]), o14(w[14], w[13], in[15]), o15(w[15], w[14], in[16]),
@@ -130,35 +128,35 @@ module zero(out, in);
 	   o20(w[20], w[19], in[21]), o21(w[21], w[20], in[22]), o22(w[22], w[21], in[23]), o23(w[23], w[22], in[24]),
 	   o24(w[24], w[23], in[25]), o25(w[25], w[24], in[26]), o26(w[26], w[25], in[27]), o27(w[27], w[26], in[28]),
 	   o28(w[28], w[27], in[29]), o29(w[29], w[28], in[30]), o30(w[30], w[29], in[31]);
-	not n1(out, w[30]);
+	not #1 n1(out, w[30]);
 endmodule
 
 // 32 bit AND operation
 module andfull(out, a, b);
 	input [31:0] a, b;
 	output [31:0] out;
-	and a0 (out[0],  a[0],  b[0]),  a1(out[1],  a[1],  b[1]),  a2(out[2],  a[2],  b[2]),  a3(out[3],  a[3],   b[3]),
+	and #1 a0 (out[0],  a[0],  b[0]),  a1(out[1],  a[1],  b[1]),  a2(out[2],  a[2],  b[2]),  a3(out[3],  a[3],   b[3]),
 		a4 (out[4],  a[4],  b[4]),  a5(out[5],  a[5],  b[5]),  a6(out[6],  a[6],  b[6]),  a7(out[7],  a[7],   b[7]),
-		a8 (out[8],  a[8],  b[8]),  a5(out[9],  a[9],  b[9]),  a6(out[10], a[10], b[10]), a7(out[11], a[11], b[11]),
-		a12(out[12], a[12], b[12]), a5(out[13], a[13], b[13]), a6(out[14], a[14], b[14]), a7(out[15], a[15], b[15]),
-		a16(out[16], a[16], b[16]), a5(out[17], a[17], b[17]), a6(out[18], a[18], b[18]), a7(out[19], a[19], b[19]),
-		a20(out[20], a[20], b[20]), a5(out[21], a[21], b[21]), a6(out[22], a[22], b[22]), a7(out[23], a[23], b[23]),
-		a24(out[24], a[24], b[24]), a5(out[25], a[25], b[25]), a6(out[26], a[26], b[26]), a7(out[27], a[27], b[27]),
-		a28(out[28], a[28], b[28]), a5(out[29], a[29], b[29]), a6(out[30], a[30], b[30]), a7(out[31], a[31], b[31]);
+		a8 (out[8],  a[8],  b[8]),  a9(out[9],  a[9],  b[9]),  a10(out[10], a[10], b[10]), a11(out[11], a[11], b[11]),
+		a12(out[12], a[12], b[12]), a13(out[13], a[13], b[13]), a14(out[14], a[14], b[14]), a15(out[15], a[15], b[15]),
+		a16(out[16], a[16], b[16]), a17(out[17], a[17], b[17]), a18(out[18], a[18], b[18]), a19(out[19], a[19], b[19]),
+		a20(out[20], a[20], b[20]), a21(out[21], a[21], b[21]), a22(out[22], a[22], b[22]), a23(out[23], a[23], b[23]),
+		a24(out[24], a[24], b[24]), a25(out[25], a[25], b[25]), a26(out[26], a[26], b[26]), a27(out[27], a[27], b[27]),
+		a28(out[28], a[28], b[28]), a29(out[29], a[29], b[29]), a30(out[30], a[30], b[30]), a31(out[31], a[31], b[31]);
 endmodule
 
 // 32 bit OR operation
 module orfull(out, a, b);
 	input [31:0] a, b;
 	output [31:0] out;
-	or  a0 (out[0],  a[0],  b[0]),  a1(out[1],  a[1],  b[1]),  a2(out[2],  a[2],  b[2]),  a3(out[3],  a[3],  b[3]),
+	or  #1 a0 (out[0],  a[0],  b[0]),  a1(out[1],  a[1],  b[1]),  a2(out[2],  a[2],  b[2]),  a3(out[3],  a[3],  b[3]),
 		a4 (out[4],  a[4],  b[4]),  a5(out[5],  a[5],  b[5]),  a6(out[6],  a[6],  b[6]),  a7(out[7],  a[7],  b[7]),
-		a8 (out[8],  a[8],  b[8]),  a5(out[9],  a[9],  b[9]),  a6(out[10], a[10], b[10]), a7(out[11], a[11], b[11]),
-		a12(out[12], a[12], b[12]), a5(out[13], a[13], b[13]), a6(out[14], a[14], b[14]), a7(out[15], a[15], b[15]),
-		a16(out[16], a[16], b[16]), a5(out[17], a[17], b[17]), a6(out[18], a[18], b[18]), a7(out[19], a[19], b[19]),
-		a20(out[20], a[20], b[20]), a5(out[21], a[21], b[21]), a6(out[22], a[22], b[22]), a7(out[23], a[23], b[23]),
-		a24(out[24], a[24], b[24]), a5(out[25], a[25], b[25]), a6(out[26], a[26], b[26]), a7(out[27], a[27], b[27]),
-		a28(out[28], a[28], b[28]), a5(out[29], a[29], b[29]), a6(out[30], a[30], b[30]), a7(out[31], a[31], b[31]);
+		a8 (out[8],  a[8],  b[8]),  a9(out[9],  a[9],  b[9]),  a10(out[10], a[10], b[10]), a11(out[11], a[11], b[11]),
+		a12(out[12], a[12], b[12]), a13(out[13], a[13], b[13]), a14(out[14], a[14], b[14]), a15(out[15], a[15], b[15]),
+		a16(out[16], a[16], b[16]), a17(out[17], a[17], b[17]), a18(out[18], a[18], b[18]), a19(out[19], a[19], b[19]),
+		a20(out[20], a[20], b[20]), a21(out[21], a[21], b[21]), a22(out[22], a[22], b[22]), a23(out[23], a[23], b[23]),
+		a24(out[24], a[24], b[24]), a25(out[25], a[25], b[25]), a26(out[26], a[26], b[26]), a27(out[27], a[27], b[27]),
+		a28(out[28], a[28], b[28]), a29(out[29], a[29], b[29]), a30(out[30], a[30], b[30]), a31(out[31], a[31], b[31]);
 endmodule
 
 // 4 to 1 MUX
@@ -173,24 +171,24 @@ module alumux(out, a, b, c, d, op);
 	wire w1, w2, w3, w4;
 	wire w11, w22, w33, w44;
 	wire w111, w222;
-	not n1(notop0, op[0]);
-	not n2(notop1, op[1]);
+	not #1 n1(notop0, op[0]);
+	not #1 n2(notop1, op[1]);
 	
-	and a1(w1, a, notop1);
-	and a2(w11, w1, notop0);
+	and #1 a1(w1, a, notop1);
+	and #1 a2(w11, w1, notop0);
 
-	and a3(w2, b, notop1);
-	and a4(w22, w2, op[0]);
+	and #1 a3(w2, b, notop1);
+	and #1 a4(w22, w2, op[0]);
 
-	and a5(w3, c, op[1]);
-	and a5(w33, w3, notop0);
+	and #1 a5(w3, c, op[1]);
+	and #1 a5(w33, w3, notop0);
 
-	and a6(w4, d, op[1]);
-	and a6(w44, w4, op[0]);
+	and #1 a6(w4, d, op[1]);
+	and #1 a6(w44, w4, op[0]);
 
-	or o1(w111, w11, w22);
-	or o2(w222, w111, w33);
-	or o3(out, w222, w44);
+	or #1 o1(w111, w11, w22);
+	or #1 o2(w222, w111, w33);
+	or #1 o3(out, w222, w44);
 endmodule
 
 // 32 bit 4 to 1 MUX
@@ -221,14 +219,14 @@ module overflow(out,a31, b31, result31);
 	output out;
 	wire w1, w2, w3, w4;
 	wire nota31, notb31, notresult31;
-	not n1(nota31, a31);
-	not n2(notb31, b31);
-	not n3(notresult31, result31);
-	and a1(w1, notresult31, b31);
-	and a2(w2, w1, a31);
-	and a3(w3, result31, notb31);
-	and a4(w4, w3, nota31);
-	or o1(out, w2, w4);
+	not #1 n1(nota31, a31);
+	not #1 n2(notb31, b31);
+	not #1 n3(notresult31, result31);
+	and #1 a1(w1, notresult31, b31);
+	and #1 a2(w2, w1, a31);
+	and #1 a3(w3, result31, notb31);
+	and #1 a4(w4, w3, nota31);
+	or #1 o1(out, w2, w4);
 endmodule
 
 module alu(result, cout, zero, set, overflow, a, b, op);
@@ -242,24 +240,22 @@ module alu(result, cout, zero, set, overflow, a, b, op);
 	orfull o1(orout, a, b);   
 	submuxfull s1(bin, op[2], b);
 	cla c1(addout, cout, a, bin, op[2]);
-	// CLA for set and zero, pretty redundant
-	submuxfull s2(bin2, 1'b1, b);
-	cla c2(subout, cout1, a, bin2, 1'b1);
-	zero z1(zero, subout);
-	buf b1(set, subout[31]);
-	// Overflow
+	zero z1(zero, addout);
+	buf b1(set, addout[31]);
 	overflow of1(overflow, a[31], b[31], addout[31]);
-	
 	alumuxfull amux(result, andout, orout, addout, 1'b0, op[1:0]);
 endmodule
 
+
 module tb();
-	parameter MAX_32 = 2147483647;
-	parameter MIN_32 = -2147483648;
 	// inputs to DUT are reg
+	parameter MAX_32 = 2147483647;
+	// parameter MAX_32 = 10;
+
+	parameter MIN_32 = -2147483648;
 	reg signed [31:0] a, b;
 	reg [2:0] op;
-	reg i,j;
+	reg [31:0] i;
 	// outputs from DUT are wire
 	wire signed [31:0] result;
 	wire cout, zero, overflow, set;
@@ -267,19 +263,58 @@ module tb();
 	alu a1(result, cout, zero, set, overflow, a, b, op);
 	initial
 	begin
+		// $dumpfile("alu_unit_500_wave.vcd");
+		// $dumpvars(0, tb);
+		$monitor($time,,"i= %d a= %d b= %d op= %b result= %d of= %b set= %b cout= %b zero= %b",
+						 i,a,b,op,result,overflow,set,cout, zero);
+		// $display($time,,"i=%d, a=%d, b=%d, op=%b, result=%d, of=%b, set=%b, cout=%b",
+		// 				 i,a,b,op,result,overflow,set,cout);
 
-		$monitor($time,,"a=%d, b=%d, op=%b, result=%d, of=%b, set=%b, cout=%b",
-						 a,b,op,result,overflow,set,cout);
-		$display($time,,"a=%d, b=%d, op=%b, result=%d, of=%b, set=%b, cout=%b",
-						 a,b,op,result,overflow,set,cout);
-
-		for(i=0; i < 10; i=i+1) begin
-			#20 a = $random % 10;
-				b = $random % 10;
-				op = $random % 8;
+		// tests for AND
+		for(i=0; i < 1001; i=i+1) begin
+			#500 a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b000;
 		end
-		$display($time,,"a=%d, b=%d, op=%b, result=%d, of=%b, set=%b, cout=%b",
-						 a,b,op,result,overflow,set,cout);
+
+		// tests for OR
+		for(i=0; i < 1000; i=i+1) begin
+			#500 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b001;
+		end
+
+		// tests for AND
+		for(i=0; i < 1000; i=i+1) begin
+			#500
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b010;
+		end
+
+		// tests for SUB
+		for(i=0; i < 1000; i=i+1) begin
+			#500 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b110;
+		end
+
+		// tests for OVERFLOW
+		for(i=0; i < 500; i=i+1) begin
+			#500 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b100;
+		end
+
+		for(i=0; i < 500; i=i+1) begin
+			#500 
+			a = $random % MAX_32;
+			b = $random % MAX_32;
+			op = 3'b111;
+		end
 	end
 
 endmodule
